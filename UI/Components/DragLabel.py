@@ -25,7 +25,7 @@ class DragLabel:
         self.destiny = None
         self.fileCount = 0
 
-        self.emptyColor = LABEL_CONFIG.get('gf_colour', 'transparent')
+        self.emptyColor = LABEL_CONFIG.get('gf_colour', 'white')
         self.filledColor = '#4CAF50'
 
         self.widget = ctk.CTkLabel(
@@ -37,9 +37,18 @@ class DragLabel:
         self.widget.drop_target_register(DND_FILES)
         self.widget.dnd_bind('<<Drop>>', self._onDrop)
 
+    def _getDisplayText(self):
+        """
+        MOSTRA O TEXTO DA LABEL, NO CASO AINDA SÓ MOSTRA A CONTAGEM DE ARQUIVOS MSM 
+        """
+
+        if self.fileCount > 0:
+            return f'{self.name} ({self.fileCount} arquivos)'
+        return self.name
+
     def _onDrop(self, event): 
         """
-        MANIPULA OS EVENTO DE SOLTAR OS ARQUIVO NA LABEL
+        MANIPULA OS EVENTOS DE SOLTAR OS ARQUIVO NA LABEL
         """
 
         dirPath = event.data.strip("{}")
@@ -59,7 +68,29 @@ class DragLabel:
         results = ImageService.processImgDir(self.destiny, self.name)
 
         successes = sum(1 for success, _ in results if success)
+
+        self._updateLabelColor()
+
         self._updateResult(f'processadas {successes} imagens para o label {self.name}')
+
+    def _updateLabelColor(self):
+        """
+        VERIFICA SE A LABEL TEM ARQUIVOS E MUDA A COR DELA
+        """
+
+        if self.fileCount > 0:
+            self.widget.configure(
+                text=self._getDisplayText(),
+                fg_color = self.filledColor,
+                text_color = 'white'
+            )
+        else:
+            self.widget.configure(
+                text=self._getDisplayText(),
+                fg_color=self.emptyColor,
+                text_color=LABEL_CONFIG.get("text_color", 'black')
+            )
+
 
     def _updateResult(self, msg):
         """

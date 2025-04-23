@@ -17,6 +17,16 @@ class FileService:
         os.makedirs(UPLOADS_DIR, exist_ok=True)
 
     @staticmethod
+    def createNewProject(projectName):
+        """
+        CRIA UMA PASTA PARA ISOLAR CADA PROJETO CORRETAMENTE
+
+        ARGS:
+            projectName(str): nome do projeto, que será o nome da pasta dentro da pasta uploads
+        """
+        os.makedirs(f'{UPLOADS_DIR}/{projectName}')
+
+    @staticmethod
     def copyDir(origin, destiny):
         """
         RETORNA UM BOOL INFORMANDO SE A OPERAÇÃO FOI BEM SUCEDIDA
@@ -57,7 +67,7 @@ class FileService:
     @staticmethod
     def generateUniqueName(dirPath):
         """
-        GERA UM NOME ÚNICO PRO ARQUIVO COM O TIMESTAMP, PARA QUE NÃO HAJA CONFLITO DE NOME NÉ 
+        GERA UM NOME ÚNICO PRO ARQUIVO COM O TIMESTAMP, PARA QUE NÃO TENHA CONFLITO DE NOME NÉ 
         """
 
         nomeArquivo = os.path.basename(dirPath)

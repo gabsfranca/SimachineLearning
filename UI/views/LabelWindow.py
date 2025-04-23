@@ -82,7 +82,10 @@ class TelaDragFotos(TkinterDnD.Tk):
             self.resultLabel.configure(text='limite de labels atingido')
             return 
         
-        name = self.askLabelName()
+        dialogBoxText = 'Insira o nome da nova label'
+        dialogBoxTittle = 'Nova Label'
+
+        name = self.askLabelName(dialogBoxText, dialogBoxTittle)
         if not name:
             return
         
@@ -92,9 +95,16 @@ class TelaDragFotos(TkinterDnD.Tk):
             resultCallback=self._updateResult
         )
 
-        labelInfo = LabelInfo(name, dragLabel.widget)
+        labelInfo = LabelInfo(name, dragLabel)
         self.labels.append(labelInfo)
         self.organizeLabels()
+
+    def newProjectHandleClick(self):
+        text = 'Nome do novo projeto'
+        tittle = 'Novo Projeto'
+        name = self.askLabelName(text, tittle)
+        FileService.createNewProject(name)
+        
 
     def askLabelName(self):
         """
@@ -104,7 +114,7 @@ class TelaDragFotos(TkinterDnD.Tk):
             str: nome da label nova ou None caso cancelado
         """
 
-        dialog = ctk.CTkInputDialog(text='Digite o nome da Label', title='Nova Label')
+        dialog = ctk.CTkInputDialog(text=f'Insira o nome da label', title=f'{'Nova Label'}')
         return dialog.get_input()
     
     def organizeLabels(self):
@@ -164,15 +174,21 @@ class TelaDragFotos(TkinterDnD.Tk):
         
         
         for lbl in self.labels:
+
             destiny = getattr(lbl, 'destiny', None)
             name = lbl.name
 
             if destiny and os.path.exists(destiny):
                 results = ImageService.processImgDir(destiny, name)
                 successes = sum(1 for success, _ in results if success)
+
+                if hasattr(lbl, 'dragLabel'):
+                    lbl.dragLabel.fileCount = successes
+                    lbl.dragLabel._updateLabelColor()
+
                 self._updateResult(f'Processadas {successes} imagens para a label {name}')
             else:
-                self._updateResult(f'sem pasta para a label {name}')
+                self._updateResult(f'pasta já criada para a label {name}')
 
         success, msg = cleanTemp()
         if not success:

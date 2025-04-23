@@ -3,7 +3,7 @@ MODELO PARA ARMAZENAR AS INFO SOBRE AS LABEL
 """
 
 class LabelInfo:
-    def __init__(self, name, labelWidget):
+    def __init__(self, name, dragLabelInstance):
         """
         args:
             name(str): o nome da label ne lkkk
@@ -11,7 +11,8 @@ class LabelInfo:
         """
 
         self.name = name
-        self.label = labelWidget
+        self.dragLabel = dragLabelInstance
+        self.label = dragLabelInstance.widget
         self.destiny = None
 
     def setDestiny(self, destinyPath):
